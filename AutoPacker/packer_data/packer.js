@@ -1,8 +1,8 @@
 const fs = require('fs');
 const path = require('path');
 
-const srcDir = path.join('..', 'uncompiled');
-const destDir = path.join('..', 'compiled');
+const srcDir = path.join('.', 'uncompiled');
+const destDir = path.join('.', 'compiled');
 const requiredFiles = ['stream', '__resource.lua'];
 
 // Check if the compiled folder exists and is empty
