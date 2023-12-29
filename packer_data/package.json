@@ -2,7 +2,7 @@
   "name": "fivem-autopacker",
   "version": "1.0.0",
   "description": "",
-  "main": "packer_data/packer.js",
+  "main": "packer.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },

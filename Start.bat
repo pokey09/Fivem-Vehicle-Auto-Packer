@@ -12,6 +12,6 @@ echo Running Packer...
 start powershell -noexit -command "cd ./packer_data; node ."
 goto end
 :install
+start powershell -command "cd ./packer_data; npm i"
 echo Installing Packer Dependencies...
-npm i
 :end
