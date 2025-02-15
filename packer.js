@@ -13,10 +13,11 @@ if (!fs.existsSync(destDir) || fs.readdirSync(destDir).length === 0) {
     }
 
     folders.forEach((folder) => {
-      const manifestFiles = ["fxmanifest.lua", "__resource.lua"];
-      const hasManifestFile = manifestFiles.some((file) =>
-        fs.existsSync(path.join(srcDir, folder, file))
-      );
+      const srcFxManifest = path.join(srcDir, folder, "fxmanifest.lua");
+      const srcResourceLua = path.join(srcDir, folder, "__resource.lua");
+      
+      // Check if either manifest exists
+      const hasManifestFile = fs.existsSync(srcFxManifest) || fs.existsSync(srcResourceLua);
 
       let hasAllRequiredFiles =
         requiredFiles.every((file) =>
@@ -39,13 +40,18 @@ if (!fs.existsSync(destDir) || fs.readdirSync(destDir).length === 0) {
         fs.mkdirSync(destDataDir, { recursive: true });
         copyMetaFiles(srcDataDir, destDataDir);
 
-        manifestFiles.forEach((file) => {
-          const srcManifest = path.join(srcDir, folder, file);
-          const destManifest = path.join(destDir, file);
-          if (fs.existsSync(srcManifest)) {
-            copyFile(srcManifest, destManifest);
-          }
-        });
+        // Handle manifest file
+        const destManifest = path.join(destDir, "fxmanifest.lua");
+        
+        if (fs.existsSync(srcFxManifest)) {
+          // If fxmanifest.lua exists, copy it
+          copyFile(srcFxManifest, destManifest);
+        } else if (fs.existsSync(srcResourceLua)) {
+          // If __resource.lua exists, convert it to fxmanifest.lua
+          const content = fs.readFileSync(srcResourceLua, 'utf8');
+          const updatedContent = convertToFxManifest(content);
+          fs.writeFileSync(destManifest, updatedContent);
+        }
       }
     });
 
@@ -53,6 +59,23 @@ if (!fs.existsSync(destDir) || fs.readdirSync(destDir).length === 0) {
   });
 } else {
   console.log(`The 'compiled' directory is not empty.`);
+}
+
+function convertToFxManifest(content) {
+  // Start with the new manifest header
+  let newContent = 'fx_version "cerulean"\ngame "gta5"\n\n';
+  
+  // Convert the content
+  let lines = content.split('\n');
+  lines = lines.filter(line => {
+    // Remove old resource_manifest_version line
+    return !line.includes('resource_manifest_version');
+  });
+  
+  // Add the remaining lines
+  newContent += lines.join('\n');
+  
+  return newContent;
 }
 
 function copyFile(src, dest) {
