@@ -40,18 +40,10 @@ if (!fs.existsSync(destDir) || fs.readdirSync(destDir).length === 0) {
         fs.mkdirSync(destDataDir, { recursive: true });
         copyMetaFiles(srcDataDir, destDataDir);
 
-        // Handle manifest file
+        // Always generate a fresh fxmanifest.lua
         const destManifest = path.join(destDir, "fxmanifest.lua");
-        
-        if (fs.existsSync(srcFxManifest)) {
-          // If fxmanifest.lua exists, copy it
-          copyFile(srcFxManifest, destManifest);
-        } else if (fs.existsSync(srcResourceLua)) {
-          // If __resource.lua exists, convert it to fxmanifest.lua
-          const content = fs.readFileSync(srcResourceLua, 'utf8');
-          const updatedContent = convertToFxManifest(content);
-          fs.writeFileSync(destManifest, updatedContent);
-        }
+        generateFxManifest(destManifest);
+
       }
     });
 
@@ -120,4 +112,25 @@ function copyMetaFiles(srcDir, destDir) {
         copyFile(srcFile, destFile);
       });
   });
+}
+
+function generateFxManifest(filePath) {
+  const content = `fx_version "cerulean"
+game "gta5"
+
+files {
+  'data/handling.meta',
+  'data/vehicles.meta',
+  'data/carcols.meta',
+  'data/carvariations.meta',
+  'data/vehiclelayouts.meta',
+}
+
+data_file 'HANDLING_FILE' 'data/handling.meta'
+data_file 'VEHICLE_METADATA_FILE' 'data/vehicles.meta'
+data_file 'CARCOLS_FILE' 'data/carcols.meta'
+data_file 'VEHICLE_VARIATION_FILE' 'data/carvariations.meta'
+data_file 'VEHICLE_LAYOUTS_FILE' 'data/vehiclelayouts.meta'
+`;
+  fs.writeFileSync(filePath, content);
 }
