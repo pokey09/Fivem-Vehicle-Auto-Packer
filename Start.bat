@@ -22,5 +22,6 @@ mkdir compiled
 goto start
 :install
 echo Installing Packer Dependencies...
-npm i
+npm i fs
+npm i path
 :end

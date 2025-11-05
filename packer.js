@@ -53,23 +53,6 @@ if (!fs.existsSync(destDir) || fs.readdirSync(destDir).length === 0) {
   console.log(`The 'compiled' directory is not empty.`);
 }
 
-function convertToFxManifest(content) {
-  // Start with the new manifest header
-  let newContent = 'fx_version "cerulean"\ngame "gta5"\n\n';
-  
-  // Convert the content
-  let lines = content.split('\n');
-  lines = lines.filter(line => {
-    // Remove old resource_manifest_version line
-    return !line.includes('resource_manifest_version');
-  });
-  
-  // Add the remaining lines
-  newContent += lines.join('\n');
-  
-  return newContent;
-}
-
 function copyFile(src, dest) {
   try {
     if (fs.existsSync(src)) {
@@ -118,16 +101,15 @@ function generateFxManifest(filePath) {
   const content = `fx_version "cerulean"
 game "gta5"
 
-
 files {
-	'data/**/handling.meta',
-	'data/**/vehicles.meta',
-	'data/**/carcols.meta',
-	'data/**/carvariations.meta',
-	'data/**/vehiclelayouts.meta',
+  'data/**/handling.meta',
+  'data/**/vehicles.meta',
+  'data/**/carcols.meta',
+  'data/**/carvariations.meta',
+  'data/**/vehiclelayouts.meta',
 }
 
-data_file 'HANDLING_FILE' 'data/**/**/handling.meta'
+data_file 'HANDLING_FILE' 'data/**/handling.meta'
 data_file 'VEHICLE_METADATA_FILE' 'data/**/vehicles.meta'
 data_file 'CARCOLS_FILE' 'data/**/carcols.meta'
 data_file 'VEHICLE_VARIATION_FILE' 'data/**/carvariations.meta'
